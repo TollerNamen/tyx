@@ -1,0 +1,88 @@
+pkg dev.tollernamen.tyx-example;
+
+import @std.base [
+    Str
+    Int
+];
+
+factorial (Int: Int) = x:x * factorial x-1;
+
+type Vehicle {
+    brand Str;
+    model Str;
+};
+
+type Car {
+    start Void;
+    turnOff Void;
+} + Vehicle;
+
+vehicle (Str: Str:) = brand: model: {
+    brand;
+    model;
+};
+
+car (Vehicle:) = vehicle: vehicle + {
+    start Void = println "VrrrOOOOooooommmm!!";
+    turnOff Void = println "Klack! Key is out! Car is turned off";
+};
+car (Str: Str:) = brand: model: car (vehicle brand model);
+
+head <T>([T]: T) = arr: arr[0]
+tail <T>([T]: T) = arr: arr[arr.size - 1]
+
+optional <T>(Maybe<T>:) = value: {
+    map <S>((T:S):) = fun:
+        value
+        | s@Some -> optional (some (fun value))
+        | n@None -> <S>optional (none ());
+};
+
+type Some = <T>{ get T; };
+type None = {};
+type Error = <E>{ message String; };
+
+type Result<T, E> = Some<T> | Error<E>;
+type Maybe<T> = Some<T> | None;
+
+divide (Int: Int: Maybe<Int>) = a: b:
+    (b != 0)
+    ? some a / b
+    : none ();
+
+printQuotient (Maybe<Int>: Void) =
+    | s@Some -> println (s.get ())
+    | n@None -> println "Cannot divide by Zero!";
+
+some <T>(T: Maybe<T>) = t: { get T = t; };
+none (: Maybe<T>) = (: {});
+
+
+
+main ([Str]: Void) = args: printQuotient (divide 6 0);
+
+enum TkKind:
+    IDENTIFIER
+    NUMBER
+    COLON
+    COMMA
+    ;
+    (:) = {
+        nameAsLowerCased = (: name.asLowerCased);
+    }
+;
+
+object (:) = (:{
+    native hashCode Int;
+    equals (Obj: Bool) = a: this == a;
+    asStr (: Str) = (: "{}${hashCode.asHexStr}");
+});
+
+my object ({base Obj ?? object (); some Obj;}:) =
+    {*}: object base some
+
+object (Obj: Obj:) = base: obj: {
+    wrap base [*];
+    wrap obj [*];
+};
+
